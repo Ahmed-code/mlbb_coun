@@ -1,1 +1,178 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Legends Counterpicks 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Mobile Legends Counterpicks 2025</h1>
+        <p class="text-center mb-4">Find the best counters for each hero based on win rate, kills, deaths, and early laning advantages. A higher number indicates an easier laning phase against that champion.</p>
+        
+        <div class="mb-4">
+            <input id="searchInput" type="text" placeholder="Search for a hero..." class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full bg-white shadow-md rounded-lg">
+                <thead>
+                    <tr class="bg-blue-600 text-white">
+                        <th class="p-3 text-left">Hero</th>
+                        <th class="p-3 text-left">Weak Against</th>
+                        <th class="p-3 text-left">Strong Against</th>
+                    </tr>
+                </thead>
+                <tbody id="heroTable">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const heroes = [
+            { name: "Aamon", weak: ["Esmeralda", "Dyrroth"], strong: ["Gusion", "Kagura"] },
+            { name: "Akai", weak: ["Lylia", "Granger", "Khufra", "Kimmy", "Lesley"], strong: ["Lunox", "Chou", "Esmeralda", "Wanwan", "Natalia"] },
+            { name: "Aldous", weak: ["Natalia", "Fanny", "Layla", "Pharsa", "Gord"], strong: ["Akai", "Melissa", "Chou", "Kadita", "Kaja"] },
+            { name: "Alice", weak: ["Karrie", "Sun", "Layla", "Natalia", "Aurora"], strong: ["Chou", "Hanabi", "Aldous", "Harley", "Kaja"] },
+            { name: "Alpha", weak: ["Miya", "Sun", "Chou", "Layla", "Zilong"], strong: ["Freya", "Thamuz", "Valir", "Baxia", "Minsitthar"] },
+            { name: "Angela", weak: ["Lesley", "Harley", "Kagura", "Natalia"], strong: ["Lancelot", "Eudora", "Alucard"] },
+            { name: "Argus", weak: ["Silvanna", "Ling", "Hanzo"], strong: ["Kimmy", "Helcurt", "Cecilion"] },
+            { name: "Arlott", weak: ["Beatrix", "Joy", "Natan", "Xavier", "Fredrinn"], strong: ["Martis", "Chou", "Minsitthar", "Kaja", "Thamuz"] },
+            { name: "Atlas", weak: ["Fanny", "Natalia", "Odette", "Eudora", "Sun"], strong: ["Karrie", "Valir", "Lesley", "Kimmy", "Baxia"] },
+            { name: "Aulus", weak: ["Barats", "Tigreal", "Phoveus", "Gloo", "Yu Zhong"], strong: ["Hayabusa", "Saber", "Melissa", "Lolita", "Chou"] },
+            { name: "Aurora", weak: ["Guinevere", "Natalia", "Hayabusa", "Chou", "Kagura"], strong: ["Moskov", "Miya", "Layla", "Yisunshin", "Tigreal"] },
+            { name: "Badang", weak: ["Chou", "Benedetta", "Aldous", "Edith", "Argus"], strong: ["Kimmy", "Hanzo", "Hanabi", "Odette", "Helcurt"] },
+            { name: "Balmond", weak: ["Layla", "Sun", "Saber", "Alice", "Cyclops"], strong: ["Dyrroth", "Lunox", "Moskov", "Alpha", "Freya"] },
+            { name: "Bane", weak: ["Miya", "Layla", "Nana", "Rafaela", "Sun"], strong: ["Chou", "Valir", "Martis", "Alucard", "Alpha"] },
+            { name: "Barats", weak: ["Khaleed", "Luo Yi", "Badang", "Natalia", "Zhask"], strong: ["X.Borg", "Karrie", "Esmeralda", "Valir", "Angela"] },
+            { name: "Baxia", weak: ["Eudora", "Layla", "Saber"], strong: ["Alice", "Miya"] },
+            { name: "Beatrix", weak: ["Eudora", "Layla", "Gord", "Miya", "Yi Sun-shin"], strong: ["Saber", "Minsitthar", "Natalia", "Kaja", "Chou"] },
+            { name: "Belerick", weak: ["Dyrroth", "X.Borg", "Karrie", "Martis", "Thamuz"], strong: ["Carmilla"] },
+            { name: "Benedetta", weak: ["Luo Yi", "Popol and Kupa", "Carmilla", "Kimmy", "Vale"], strong: ["Guinevere", "Khufra", "Phoveus", "Minsitthar", "Kaja"] },
+            { name: "Brody", weak: ["Layla", "Sun", "Freya", "Wanwan", "Carmilla"], strong: ["Ling", "Hayabusa", "Karina", "Saber", "Eudora"] },
+            { name: "Bruno", weak: ["Nolan", "Rafaela", "Zilong", "Layla", "Sun"], strong: ["Zilong", "Layla", "Moskov", "Alpha", "Freya", "Karrie", "Karina"] },
+            { name: "Cecilion", weak: ["Masha", "Kimmy", "Carmilla", "Valir", "Layla"], strong: ["Lunox", "Chou", "Yin", "Ling", "X.Borg"] },
+            { name: "Chang’e", weak: ["Saber", "Chou", "Lolita", "Jawhead", "Baxia"], strong: ["Eudora", "Layla", "Lesley", "Pharsa", "Miya"] },
+            { name: "Chip", weak: ["Nolan", "Layla", "Saber", "Gusion", "Paquito"], strong: ["Baxia", "Wanwan", "Moskov", "Lesley", "Franco"] },
+            { name: "Chou", weak: ["Silvanna", "Martis", "Phoveus", "Minsitthar", "Dyrroth"], strong: ["Clint", "Zilong", "Nana", "Yi Sun-shin", "Natalia"] },
+            { name: "Cici", weak: ["Tigreal", "Gloo", "Badang", "Alpha", "Miya"], strong: ["Ling", "Lancelot", "Saber", "Akai", "Yve"] },
+            { name: "Clint", weak: ["Zilong", "Martis", "Balmond", "Hanabi", "Sun"], strong: ["Saber", "Eudora", "Akai", "Natalia", "Kaja"] },
+            { name: "Cyclops", weak: ["Miya", "Layla", "Bane", "Fanny", "Clint"], strong: ["Ling", "Alice", "Lancelot", "Natalia", "Harley"] },
+            { name: "Diggie", weak: ["Saber", "Aurora", "Chou", "Franco", "Eudora"], strong: ["Aldous", "Lancelot", "Hayabusa", "Helcurt", "Natalia"] },
+            { name: "Dyrroth", weak: ["Kagura", "Granger", "Kimmy", "Leomord", "Minsitthar"], strong: ["Guinevere", "Esmeralda", "Phoveus", "Chou"] },
+            { name: "Edith", weak: ["Popol and Kupa", "Mathilda", "Paquito", "Phoveus", "Benedetta"], strong: ["Helcurt", "Fanny", "Chou", "Gusion", "Lancelot"] },
+            { name: "Esmeralda", weak: ["Johnson", "Leomord", "Angela", "Dyrroth", "Valir", "Baxia"], strong: ["Karrie", "Thamuz", "Natalia", "Esmeralda", "Wanwan"] },
+            { name: "Estes", weak: ["Rafaela", "Cici", "Leomord", "Alpha", "Layla"], strong: ["Freya", "Luo Yi", "Baxia", "Fanny", "Eudora"] },
+            { name: "Fanny", weak: ["Phoveus", "Chou", "Eudora", "Franco", "Akai"], strong: ["Eudora", "Ruby", "Akai", "Karina"] },
+            { name: "Floryn", weak: ["Miya", "Harley", "Layla", "Valir", "Beatrix"], strong: ["Saber", "Paquito", "X.Borg", "Gusion", "Hayabusa"] },
+            { name: "Franco", weak: ["Eudora", "Layla", "Clint", "Miya", "Moskov"], strong: ["Chou", "Freya", "Valir", "Martis", "Minsitthar"] },
+            { name: "Freya", weak: ["Odette", "Irithel", "Alpha", "Sun", "Zilong"], strong: ["Masha", "Melissa", "Esmeralda", "Minsitthar", "Phoveus"] },
+            { name: "Gloo", weak: ["Zhask", "Pharsa", "Odette", "Moskov", "Lesley"], strong: ["Minsitthar", "Lolita", "Ling", "Khufra", "Sun"] },
+            { name: "Gord", weak: ["Cyclops"], strong: ["Natalia"] },
+            { name: "Granger", weak: ["Yve", "Mathilda", "Barats", "Yu Zhong", "Wanwan"], strong: ["Phoveus", "Masha", "Jawhead", "Valir"] },
+            { name: "Grock", weak: ["Gord", "Alice", "Nana", "Clint", "Zilong"], strong: ["Diggie", "Odette", "Valir", "Valentina", "Karrie"] },
+            { name: "Guinevere", weak: ["Vale", "Lesley", "Badang", "Lunox", "Valir"], strong: ["Selena", "Wanwan", "Diggie", "Valir", "Fanny"] },
+            { name: "Hanabi", weak: ["Minotaur", "Layla", "Akai", "Johnson", "Chou"], strong: ["Natalia", "Fanny", "Hayabusa", "Nolan", "Karina"] },
+            { name: "Hanzo", weak: ["Gord", "Pharsa", "Fanny", "Aldous", "Helcurt"], strong: ["Guinevere", "Chou", "Kagura", "Fanny", "Franco"] },
+            { name: "Harith", weak: ["Aldous", "Hanabi", "Lesley", "Alice", "Odette"], strong: ["Helcurt", "Claude", "Lancelot", "Gusion", "Leomord"] },
+            { name: "Harley", weak: ["Layla", "Nana", "Alice", "Johnson", "Gatotkaca"], strong: ["Jawhead", "Hayabusa", "Saber", "Eudora", "Vale"] },
+            { name: "Hayabusa", weak: ["Karrie"], strong: ["Hayabusa", "Selena", "Fanny", "Natalia"] },
+            { name: "Helcurt", weak: ["Layla", "Vexana", "Odette", "Nana", "Gord"], strong: ["Saber", "Natalia", "Fanny", "Hayabusa", "Chou"] },
+            { name: "Hilda", weak: ["Natalia", "Karina", "Eudora", "Estes"], strong: ["Karrie", "Dyrroth", "Valir", "Thamuz", "Helcurt"] },
+            { name: "Hylos", weak: ["Layla", "Clint", "Johnson", "Sun", "Miya"], strong: ["Lylia", "Chou", "Natalia", "Kagura", "Kadita"] },
+            { name: "Irithel", weak: ["Miya", "Moskov", "Layla", "Alucard", "Gord"], strong: ["Freya", "Moskov", "Aurora", "Nana", "Alpha"] },
+            { name: "Ixia", weak: ["Aldous", "Chou", "Lancelot", "Odette", "Miya"], strong: ["Lolita", "Karrie"] },
+            { name: "Jawhead", weak: ["Diggie", "Valir"], strong: ["Baxia", "Odette", "Zhask", "Roger", "Natalia", "Aurora"] },
+            { name: "Johnson", weak: ["Esmeralda", "Zhask", "Jawhead", "Diggie", "Grock"], strong: ["Miya", "Sun", "Balmond", "Karrie", "Bruno", "Layla"] },
+            { name: "Julian", weak: ["Valentina", "Yin", "Mathilda", "Brody", "Yve"], strong: ["Dyrroth", "X.Borg", "Yin"] },
+            { name: "Kadita", weak: ["Helcurt", "Natalia", "Minsitthar", "Baxia", "Kaja"], strong: ["Cyclops", "Miya", "Gord", "Balmond", "Kimmy"] },
+            { name: "Kagura", weak: ["Odette", "Cyclops", "Natalia", "Eudora", "Layla"], strong: ["Fanny", "Grock", "Saber", "Argus", "Yin"] },
+            { name: "Kaja", weak: ["Natalia", "Fanny", "Harley", "Chou", "Aurora"], strong: ["Helcurt", "Grock", "Akai", "Martis", "Gusion"] },
+            { name: "Kalea", weak: ["Guinevere", "Leomord"], strong: ["Martis", "Thamuz"] },
+            { name: "Karrie", weak: ["Hayabusa", "Karina", "Chou", "Lolita", "Natalia"], strong: ["Miya", "Uranus", "Gord", "Tigreal", "Layla"] },
+            { name: "Kimmy", weak: ["Chou", "Aldous", "Hayabusa", "Lancelot", "Lolita"], strong: ["Valir", "Minotaur", "Moskov", "Vale", "Hylos"] },
+            { name: "Lancelot", weak: ["Layla", "Lapu-Lapu", "Sun", "Zilong", "Yisunshin"], strong: ["Alucard", "Aurora", "Jawhead", "Martis", "Silvanna"] },
+            { name: "Layla", weak: [], strong: [] },
+            { name: "Leomord", weak: ["Jawhead", "Chou", "Alpha", "Minsitthar", "Melissa"], strong: ["Thamuz", "Hanabi", "Martis", "Layla", "Pharsa"] },
+            { name: "Lesley", weak: ["Vale", "Nana", "Rafaela"], strong: ["Fanny", "Natalia"] },
+            { name: "Ling", weak: ["Joy", "Wanwan", "Gusion", "Arlott", "Saber"], strong: ["Layla", "Baxia", "Yve", "Esmeralda", "Minsitthar"] },
+            { name: "Lolita", weak: ["Kadita", "Miya", "Nana", "Layla", "Moskov"], strong: ["Chou", "Akai", "Ruby", "Franco", "Edith"] },
+            { name: "Lunox", weak: ["Pharsa", "Julian", "Gusion"], strong: ["Wanwan", "Baxia", "Sun"] },
+            { name: "Luo Yi", weak: ["Carmilla", "Odette", "Hanabi", "Lylia", "Zilong"], strong: ["Natalia", "Hayabusa", "Gusion", "Franco", "Chou"] },
+            { name: "Lylia", weak: ["Granger", "Khufra", "Vale", "Kimmy", "Hanzo"], strong: ["Natalia", "Freya", "Helcurt", "Kagura", "Hayabusa"] },
+            { name: "Martis", weak: ["Phoveus", "Kaja", "Franco", "Minsitthar"], strong: ["Zhask", "Pharsa", "Natalia", "Miya", "Baxia"] },
+            { name: "Masha", weak: ["Belerick", "Thamuz", "Sun", "Lunox", "Dyrroth"], strong: ["Martis", "Yin", "Hanzo"] },
+            { name: "Melissa", weak: ["Granger", "Leomord", "Clint", "Brody", "Mathilda"], strong: ["Aamon", "Helcurt", "Paquito", "Yu Zhong", "Roger"] },
+            { name: "Minotaur", weak: ["Zilong", "Saber", "Miya", "Sun", "Karina"], strong: ["Harley", "Kagura"] },
+            { name: "Miya", weak: ["Layla", "Bruno", "Bane", "Alucard", "Balmond"], strong: ["Eudora", "Miya", "Layla", "Granger", "Lesley", "Claude"] },
+            { name: "Moskov", weak: ["Chou", "Saber", "Natalia", "Badang", "Ling"], strong: ["Balmond", "Akai", "Tigreal", "Zilong", "Layla"] },
+            { name: "Nana", weak: ["Silvanna", "Chou", "Lancelot", "Hayabusa", "Sun"], strong: ["Zilong", "Layla", "Gord", "Natalia", "Miya"] },
+            { name: "Natalia", weak: ["Saber", "Jawhead", "Hayabusa", "Khufra", "Rafaela"], strong: ["Eudora", "Layla", "Gord", "Miya", "Yisunshin"] },
+            { name: "Natan", weak: ["Luo Yi", "Cecilion", "Carmilla", "Popol and Kupa", "Silvanna"], strong: ["Eudora", "Kagura", "Paquito", "X.Borg", "Natan"] },
+            { name: "Nolan", weak: ["Novaria", "Yin", "Badang", "Hanabi", "Silvanna"], strong: ["Phoveus", "Khufra", "Franco", "Minsitthar", "Gatotkaca"] },
+            { name: "Novaria", weak: ["Martis", "Hanabi", "Change", "Lesley", "Zhask"], strong: ["Chou", "Helcurt", "Harley", "Lancelot", "Fanny"] },
+            { name: "Odette", weak: ["Cyclops", "Miya", "Layla", "Irithel", "Kimmy"], strong: ["Guinevere", "X.Borg", "Dyrroth", "Franco", "Kaja"] },
+            { name: "Paquito", weak: ["Layla", "Khaleed", "Luo Yi", "Popol and Kupa", "Badang"], strong: ["Argus", "Phoveus", "Khufra", "Sun", "Minsitthar"] },
+            { name: "Pharsa", weak: ["Eudora", "Zhask", "Irithel", "Minotaur", "Layla"], strong: ["Franco", "Fanny", "Jawhead", "Harley", "Helcurt"] },
+            { name: "Phoveus", weak: ["Odette", "Cyclops", "Zhask", "Layla", "Miya"], strong: ["Argus", "Hayabusa", "Karina", "Minsitthar", "Natalia"] },
+            { name: "Popol and Kupa", weak: ["Kimmy", "Wanwan", "Layla", "Silvanna", "Esmeralda"], strong: ["Nolan", "Natalia", "Gusion", "Arlott", "Aldous", "Granger", "Zhask"] },
+            { name: "Rafaela", weak: ["Alice", "Cyclops", "Sun", "Nana", "Bane"], strong: ["Karina", "Saber", "Hayabusa", "Natalia", "Moskov"] },
+            { name: "Roger", weak: ["Wanwan", "Valir", "Diggie"], strong: ["Lancelot", "Odette", "Gusion"] },
+            { name: "Ruby", weak: ["Saber", "Sun", "Fanny", "Chou", "Zilong"], strong: ["X.Borg", "Yin", "Phoveus", "Valir", "Baxia"] },
+            { name: "Saber", weak: ["Miya", "Layla", "Gord", "Nana", "Bruno"], strong: ["Belerick", "Argus", "Diggie", "Valir", "Hanabi"] },
+            { name: "Selena", weak: ["Wanwan", "Saber", "Benedetta"], strong: ["Lesley", "Claude", "Gord", "Layla", "Miya"] },
+            { name: "Silvanna", weak: ["Silvanna", "Ling", "Kimmy", "Masha", "Kadita"], strong: ["Valir", "Karrie", "Diggie", "Kaja", "Akai"] },
+            { name: "Sun", weak: ["Clint", "Miya", "Natalia", "Layla", "Hayabusa"], strong: ["X.Borg", "Ruby", "Silvanna", "Aulus", "Valir"] },
+            { name: "Suyou", weak: ["Thamuz", "X.Borg", "Yin", "Kaja", "Franco"], strong: ["Saber"] },
+            { name: "Terizla", weak: ["Layla", "Miya", "Johnson", "Yve", "Alucard"], strong: ["Dyrroth", "Lolita", "Yin", "Gusion", "Hayabusa"] },
+            { name: "Thamuz", weak: ["X.Borg", "Aldous", "Valir", "Baxia", "Cici"], strong: ["Lesley", "Odette", "Natalia", "Moskov", "Johnson"] },
+            { name: "Tigreal", weak: ["Miya", "Layla", "Odette", "Gord", "Lesley"], strong: ["Gusion", "Zilong", "Alucard", "Akai", "Hayabusa"] },
+            { name: "Uranus", weak: ["Natalia", "Saber", "Hayabusa", "Sun", "Vexana"], strong: ["Karrie", "Odette", "Dyrroth", "Baxia", "Valir"] },
+            { name: "Vale", weak: ["Nana", "Miya", "Aurora", "Moskov", "Alpha"], strong: ["Eudora", "Akai", "Karina", "Fanny", "Freya"] },
+            { name: "Valir", weak: ["Gusion", "Grock", "Lesley", "Harley", "Odette", "Alucard", "Cyclops"], strong: ["Zhask", "Lancelot", "Kaja", "Akai", "Franco", "Hayabusa"] },
+            { name: "Vexana", weak: ["Yin", "Ling", "Gusion", "Aulus", "Natalia"], strong: ["Valir", "Dyrroth", "Lunox", "Karrie", "X.Borg"] },
+            { name: "Wanwan", weak: [], strong: [] },
+            { name: "X.Borg", weak: ["Kimmy", "Thamuz", "Selena", "Moskov", "Martis"], strong: ["Minsitthar", "Esmeralda", "Kaja", "Franco", "Phoveus"] },
+            { name: "Xavier", weak: ["Melissa", "Yve", "Yin", "Mathilda", "Natan"], strong: ["Franco", "X.Borg", "Martis", "Yu Zhong", "Hayabusa"] },
+            { name: "Yi Sun-shin", weak: ["Nana", "Chou", "Zilong", "Rafaela", "Sun"], strong: ["Karina", "Eudora", "Alucard", "Hayabusa", "Fanny"] },
+            { name: "Yin", weak: ["Thamuz", "Sun", "Argus", "Jawhead", "Valir"], strong: ["Aamon", "Thamuz", "Beatrix", "Minsitthar", "Wanwan"] },
+            { name: "Yu Zhong", weak: ["Kimmy", "Diggie", "Atlas", "Natalia", "Wanwan"], strong: ["Karrie", "Dyrroth", "Moskov", "Thamuz", "Valentina"] },
+            { name: "Yve", weak: ["Helcurt", "Nana", "Natalia", "Franco", "Kaja"], strong: ["Yu Zhong", "Lancelot", "Faramis", "Wanwan"] },
+            { name: "Zetian", weak: ["Fanny", "Ling", "Nolan", "Guinevere", "Ling"], strong: ["Minsitthar", "Yin", "Thamuz", "Guinevere", "Alpha"] },
+            { name: "Zhask", weak: ["Karrie", "Cyclops", "Gord", "Layla", "Moskov"], strong: ["Esmeralda", "Harley", "Helcurt", "Natalia", "Karina"] },
+            { name: "Zhuxin", weak: ["Miya", "Layla", "Nana", "Zhask", "Clint"], strong: ["Hayabusa", "Lancelot", "Ling", "Natalia"] },
+            { name: "Zilong", weak: ["Miya", "Fanny", "Gord", "Layla", "Karrie"], strong: ["Helcurt", "Gatotkaca", "Freya", "Belerick", "Jawhead"] }
+        ];
+
+        function populateTable(data) {
+            const tableBody = document.getElementById('heroTable');
+            tableBody.innerHTML = '';
+            data.forEach(hero => {
+                const row = document.createElement('tr');
+                row.className = 'border-b';
+                row.innerHTML = `
+                    <td class="p-3">${hero.name}</td>
+                    <td class="p-3">${hero.weak.join(', ')}</td>
+                    <td class="p-3">${hero.strong.join(', ')}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterHeroes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredHeroes = heroes.filter(hero => hero.name.toLowerCase().includes(searchTerm));
+            populateTable(filteredHeroes);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', filterHeroes);
+
+        // Initial population of the table with sorted heroes
+        populateTable(heroes.sort((a, b) => a.name.localeCompare(b.name)));
+    </script>
+</body>
+</html>
